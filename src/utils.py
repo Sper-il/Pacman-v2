@@ -73,6 +73,7 @@ def reset_maze(grid_cells: List[Cell]):
         cell.generated = False
         cell.visited = False
         cell.is_solution = False
+        cell.has_dot = True  # Reset dots
         cell.walls = {"top": True, "right": True, "bottom": True, "left": True}
 
     # Reset the data structures and flags
@@ -119,6 +120,7 @@ def reset_cells_visited_state(grid_cells: List[Cell]):
     for cell in grid_cells:
         cell.visited = False
         cell.is_solution = False
+        cell.has_dot = True  # Reset dots
 
 def remove_walls(current: Cell, next: Cell):
     """
