@@ -1,4 +1,5 @@
 import pygame
+from collections import deque
 from config import *
 from typing import List
 from cell import Cell
@@ -27,20 +28,20 @@ def solve_maze_BFS(grid_cells: List[Cell], sc: pygame.Surface):
     start_cell = grid_cells[0]
     destination_cell = grid_cells[-1]
 
-    # Initialize needed structures for BFS and path reconstucting
-    queue = []
+    # Initialize needed structures for BFS and path reconstructing
+    queue = deque()
     parent = {}
     queue.append(start_cell)
     parent[start_cell] = None
+    start_cell.visited = True
 
     # Counter to track number of visited cells
     visited_cells_count = 0
 
     # Main BFS loop
     while queue:
-        # Dequeue the first cell and mark it as visited
-        current_cell = queue.pop(0)
-        current_cell.visited = True
+        # Dequeue the first cell
+        current_cell = queue.popleft()
         visited_cells_count += 1
 
         # Delay for visualization purposes
@@ -62,6 +63,7 @@ def solve_maze_BFS(grid_cells: List[Cell], sc: pygame.Surface):
         draw_button(sc, "BIDIRECTIONAL BFS", 20, 450, BUTTON_COLOR)
         draw_button(sc, "A STAR", 20, 500, BUTTON_COLOR)
         draw_button(sc, "GBFS", 20, 550, BUTTON_COLOR)
+        draw_button(sc, "DIJKSTRA", 20, 600, BUTTON_COLOR)
 
         # Draw the visited cell
         current_cell.draw(sc)
@@ -76,6 +78,7 @@ def solve_maze_BFS(grid_cells: List[Cell], sc: pygame.Surface):
         neighbors = current_cell.check_neighbors_for_search(grid_cells)
         for neighbor in neighbors:
             if not neighbor.visited:
+                neighbor.visited = True
                 # Enqueue the neighbor for later exploration
                 queue.append(neighbor)
                 # Set current cell as the parent of this neighbor

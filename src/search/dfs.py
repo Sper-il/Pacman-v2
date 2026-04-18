@@ -63,6 +63,7 @@ def solve_maze_DFS(grid_cells: List[Cell], sc: pygame.Surface):
         draw_button(sc, "BIDIRECTIONAL BFS", 20, 450, BUTTON_COLOR)
         draw_button(sc, "A STAR", 20, 500, BUTTON_COLOR)
         draw_button(sc, "GBFS", 20, 550, BUTTON_COLOR)
+        draw_button(sc, "DIJKSTRA", 20, 600, BUTTON_COLOR)
 
         # Draw the visited cell
         current_cell.draw(sc)

@@ -17,8 +17,12 @@ clock = pygame.time.Clock()
 
 # Load logo image
 logo_path = os.path.join(PROJECT_DIR, "images", "logo.png")
-image = pygame.image.load(logo_path)
-image = pygame.transform.scale(image, (240, 120))
+try:
+    image = pygame.image.load(logo_path)
+    image = pygame.transform.scale(image, (240, 120))
+except (FileNotFoundError, pygame.error):
+    image = pygame.Surface((240, 120))
+    image.fill((30, 30, 60))
 
 # Map dimensions (customizable)
 map_width = 16
@@ -203,11 +207,13 @@ ghost_settings = {
     2: {"speed": 18, "algorithm": "bfs", "behavior": "flank"},      # Inky - Cyan
     3: {"speed": 20, "algorithm": "bfs", "behavior": "patrol"}      # Clyde - Orange
 }
-ALGORITHM_OPTIONS = ["bfs", "astar", "dfs"]
+ALGORITHM_OPTIONS = ["bfs", "astar", "dfs", "gbfs", "dijkstra"]
 ALGORITHM_NAMES = {
     "bfs": "BFS", 
     "astar": "A*", 
-    "dfs": "DFS"
+    "dfs": "DFS",
+    "gbfs": "GBFS",
+    "dijkstra": "Dijkstra"
 }
 BEHAVIOR_OPTIONS = ["chase", "predict", "flank", "random", "patrol"]
 BEHAVIOR_NAMES = {
