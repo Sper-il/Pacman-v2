@@ -150,12 +150,13 @@ class Ghost:
         def heuristic(a, b):
             return abs(a[0] - b[0]) + abs(a[1] - b[1])  # Manhattan distance
         
-        # Priority queue: (f_cost, g_cost, position, path)
-        open_set = [(heuristic(start, goal), 0, start, [])]
+        # Priority queue: (f_cost, g_cost, counter, position, path)
+        counter = 0
+        open_set = [(heuristic(start, goal), 0, counter, start, [])]
         visited = set()
         
         while open_set:
-            f_cost, g_cost, (cx, cy), path = heapq.heappop(open_set)
+            f_cost, g_cost, _, (cx, cy), path = heapq.heappop(open_set)
             
             if (cx, cy) in visited:
                 continue
@@ -192,7 +193,8 @@ class Ghost:
                 
                 new_g = g_cost + 1
                 new_f = new_g + heuristic((nx, ny), goal)
-                heapq.heappush(open_set, (new_f, new_g, (nx, ny), new_path))
+                counter += 1
+                heapq.heappush(open_set, (new_f, new_g, counter, (nx, ny), new_path))
         
         return []
     
@@ -806,11 +808,11 @@ class Cell:
         if left and not left.generated:
             neighbors.append(left)
 
-        # Return the list of available neighbors or False if no neighbors found.
+        # Return the list of available neighbors or empty list if no neighbors found.
         if len(neighbors) > 0:
             return neighbors
         else:
-            return False 
+            return []
     
     def check_neighbors_for_search(self, grid_cells):
         """
