@@ -3,7 +3,6 @@ import os
 import random
 from cell import Cell, Pacman, Ghost
 from config import *
-from collections import deque
 
 # Get the directory where the script is located
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -12,7 +11,7 @@ PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
 # Initialize Pygame
 pygame.init()
 sc = pygame.display.set_mode(RESOLUTION)
-pygame.display.set_caption("PACMAN KEY HUNT - AI Edition")
+pygame.display.set_caption("PACMAN KEY HUNT")
 clock = pygame.time.Clock()
 
 # Load logo image
@@ -207,11 +206,10 @@ ghost_settings = {
     2: {"speed": 18, "algorithm": "bfs", "behavior": "flank"},      # Inky - Cyan
     3: {"speed": 20, "algorithm": "bfs", "behavior": "patrol"}      # Clyde - Orange
 }
-ALGORITHM_OPTIONS = ["bfs", "astar", "dfs", "gbfs", "dijkstra"]
+ALGORITHM_OPTIONS = ["bfs", "astar", "gbfs", "dijkstra"]
 ALGORITHM_NAMES = {
     "bfs": "BFS", 
     "astar": "A*", 
-    "dfs": "DFS",
     "gbfs": "GBFS",
     "dijkstra": "Dijkstra"
 }

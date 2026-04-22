@@ -21,7 +21,7 @@ class Ghost:
         self.move_delay = speed  # Ghost speed (higher = slower)
         self.path_to_pacman = []  # AI pathfinding result
         
-        # Pathfinding algorithm: bfs, astar, dfs
+        # Pathfinding algorithm: bfs, astar, gbfs, dijkstra
         self.algorithm = "bfs"
         
         # Behavior mode:
@@ -33,8 +33,6 @@ class Ghost:
         self.behavior = "chase"
         self.patrol_corners = []  # For patrol mode
         self.patrol_index = 0
-        self.cached_path = []  # Cache path for DFS
-        self.path_recalc_counter = 0  # Recalculate path every N moves
         
     def draw(self, sc):
         """Draw ghost at current position."""
@@ -315,59 +313,6 @@ class Ghost:
 
         return []
 
-    def dfs_find_path(self, grid_cells, target_x, target_y):
-        """Use DFS to find path to target (unpredictable paths)."""
-        grid_cols = max(cell.x for cell in grid_cells) + 1
-        grid_rows = max(cell.y for cell in grid_cells) + 1
-        
-        start = (self.x, self.y)
-        goal = (target_x, target_y)
-        
-        if start == goal:
-            return []
-        
-        stack = [(start, [])]
-        visited = {start}
-        
-        while stack:
-            (cx, cy), path = stack.pop()
-            
-            idx = cx + cy * grid_cols
-            if idx < 0 or idx >= len(grid_cells):
-                continue
-            current_cell = grid_cells[idx]
-            
-            # Randomize direction order for unpredictability
-            directions = [
-                ("up", 0, -1, "top"),
-                ("down", 0, 1, "bottom"),
-                ("left", -1, 0, "left"),
-                ("right", 1, 0, "right")
-            ]
-            random.shuffle(directions)
-            
-            for direction, dx, dy, wall in directions:
-                nx, ny = cx + dx, cy + dy
-                
-                if nx < 0 or nx >= grid_cols or ny < 0 or ny >= grid_rows:
-                    continue
-                if current_cell.walls[wall]:
-                    continue
-                n_idx = nx + ny * grid_cols
-                if n_idx < len(grid_cells) and hasattr(grid_cells[n_idx], 'is_obstacle') and grid_cells[n_idx].is_obstacle:
-                    continue
-                if (nx, ny) in visited:
-                    continue
-                
-                new_path = path + [direction]
-                if (nx, ny) == goal:
-                    return new_path
-                
-                visited.add((nx, ny))
-                stack.append(((nx, ny), new_path))
-        
-        return []
-    
     def get_ai_target(self, pacman, grid_cells):
         """Get target position based on ghost's behavior."""
         grid_cols = max(cell.x for cell in grid_cells) + 1
@@ -486,17 +431,7 @@ class Ghost:
             else:
                 target_x, target_y = target
                 
-                # DFS: cache path, only recalculate every 5 moves or when path is empty
-                if self.algorithm == "dfs":
-                    self.path_recalc_counter += 1
-                    if not self.cached_path or self.path_recalc_counter >= 5:
-                        self.cached_path = self.dfs_find_path(grid_cells, target_x, target_y)
-                        self.path_recalc_counter = 0
-                    self.path_to_pacman = self.cached_path
-                    # Consume first step from cache
-                    if self.cached_path:
-                        self.cached_path = self.cached_path[1:]
-                elif self.algorithm == "astar":
+                if self.algorithm == "astar":
                     self.path_to_pacman = self.astar_find_path(grid_cells, target_x, target_y)
                 elif self.algorithm == "gbfs":
                     self.path_to_pacman = self.gbfs_find_path(grid_cells, target_x, target_y)
@@ -512,7 +447,6 @@ class Ghost:
                         self.direction = next_dir
                     else:
                         self.direction = random.choice(valid_directions)
-                        self.cached_path = []  # Invalidate DFS cache
                 else:
                     self.direction = random.choice(valid_directions)
         else:
